@@ -23,3 +23,33 @@ console.log(container); // 가장 처음 일치한 요소를 반환
 const containers2 = document.querySelectorAll(".container");
 console.log(containers2);
 
+console.log("----------------------------");
+
+
+/* 버튼 설정 */
+// button 태그 생성
+const buttonEl = document.createElement("button");
+
+// 버튼 라벨 설정
+buttonEl.textContent = "버튼";
+
+// 영역 1의 div 태그 얻기
+const div1El = document.querySelector(".container");
+console.log(div1El);
+
+// div 태그 아래 button 태그 추가
+div1El.appendChild(buttonEl);
+
+/* h1 태그 삭제 */
+
+// h1 태그 요소 얻기
+const h1El = document.getElementById("title");
+
+// body 태그 얻기
+const bodyEl = document.querySelector("body");
+
+// body 태그 아래부터 h1 태그 삭제
+// bodyEl.removeChild(h1El);
+
+// body 태그 아래부터 모두 삭제
+bodyEl.textContent = null;
