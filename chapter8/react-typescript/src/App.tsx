@@ -1,26 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import axios from "axios";
+import { ListItem } from './components/ListItem';
 
-function App() {
+// 사용자 정보 타입 정의
+type User = {
+  id: number;
+  name: string;
+  age: number;
+  personalColor: string;
+};
+
+const App = () => {
+  // 얻은 사용자 정보
+  const [users, setUsers] = useState<User[]>([]);
+
+  // 화면에 표시될 때 사용자 정보 얻기
+  useEffect(() => {
+    axios.get("https//example.com/users")
+        .then((res) => {setUsers(res.data)});
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {users.map(user => (
+        <ListItem id={user.id} name={user.name} age={user.age} />
+      ))}
     </div>
   );
-}
-
-export default App;
+};
