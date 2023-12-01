@@ -1,14 +1,16 @@
-import {useState, FC, ChangeEvent, useCallback} from 'react';
+import {useState, FC, ChangeEvent, useCallback, useMemo} from 'react';
 import styled from "styled-components";
 import { MemoList } from './MemoList';
+import { useMemoList } from '../hooks/useMemoList';
 
 export const App: FC = () => {
-  console.log("App 렌더링");
+  // console.log("App 렌더링");
+
+  // 사용자 정의 훅으로을 부터 변수와 함수 얻기
+  const {memoList, addTodo, deleteTodo} = useMemoList()
   
   // 텍스트 박스 State
   const [text, setText] = useState<string>("");
-  // 메모 목록 State
-  const [memoList, setMemoList] = useState<string[]>([]);
 
   // 텍스트 박스 입력 시, 입력 내용을 State에 설정
   const onChangeText = (e: ChangeEvent<HTMLInputElement>) => {
@@ -17,12 +19,7 @@ export const App: FC = () => {
 
   // 추가 버튼 클릭
   const onClickAdd = () => {
-    // State 변경을 정상적으로 감지하기 위해 새로운 배열 생성
-    const newMemoList = [...memoList];
-
-    // 텍스트 박스 입력 내용을 메모 배열에 추가
-    newMemoList.push(text);
-    setMemoList(newMemoList);
+    addTodo(text);
 
     // 텍스트 박스 비우기
     setText("");
@@ -30,13 +27,8 @@ export const App: FC = () => {
 
   // 삭제 버튼 클릭 (몇 번째 버튼이 클릭되었는지 인수로 전달)
   const onClickDelete = useCallback((index: number) => {
-    
-    // State 변경 정상 감지를 위해 신규 배열 생성
-    const newMemoList = [...memoList];
-    // 메모 배열로부터 해당 요소 삭제
-    newMemoList.splice(index, 1);
-    setMemoList(newMemoList);
-  }, [memoList]);
+    deleteTodo(index);
+  }, [deleteTodo]);
 
   return (
     <div>
