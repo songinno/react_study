@@ -1,3 +1,4 @@
+import { log } from "console";
 import { useCallback, useState } from "react";
 
 // 메모 목록에 관한 사용자 정의 훅
@@ -19,6 +20,7 @@ export const useMemoList = () => {
     const deleteTodo = useCallback((index: number) => {
         // State 변경 정상 감지를 위한 신규 배열 생성
         const newMemos = [...memoList];
+        console.log(newMemos);
         // 메모 배열에서 해당 요소 삭제
         newMemos.splice(index, 1);
         setMemoList(newMemos);

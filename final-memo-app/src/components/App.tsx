@@ -4,10 +4,10 @@ import { MemoList } from './MemoList';
 import { useMemoList } from '../hooks/useMemoList';
 
 export const App: FC = () => {
-  // console.log("App 렌더링");
+  console.log("App 렌더링");
 
   // 사용자 정의 훅으로을 부터 변수와 함수 얻기
-  const {memoList, addTodo, deleteTodo} = useMemoList()
+  const {memoList, addTodo, deleteTodo} = useMemoList();
   
   // 텍스트 박스 State
   const [text, setText] = useState<string>("");

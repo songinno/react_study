@@ -23,3 +23,5 @@ console.log(`내 이름은 ${newName}이고, 나이는 ${newAge} 입니다.`);
 const [myName, myAge] = myProfile2;
 const message2 = `내 이름은 ${myName}이고, 나이는 ${myAge} 입니다.`;
 console.log(message2);
+
+

@@ -1,5 +1,5 @@
 {
-  "name": "use-effect",
+  "name": "use-ref",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
