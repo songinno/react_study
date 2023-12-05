@@ -1,6 +1,7 @@
 import React from "react";
 
-const User = ({user}) => {
+const User = (props) => {
+    const {user} = props;
     return (
         <div>
             <b>{user.username}</b> <span>({user.email})</span>
@@ -8,36 +9,20 @@ const User = ({user}) => {
     );
 };
 
-export const UserList = () => {
-    const users = [
-        {
-            id: 1,
-            username: 'velopert',
-            email: 'public.velopert@gmail.com'
-        },
-        {
-            id: 2,
-            username: 'tester',
-            email: 'tester@example.com'
-        },
-        {
-            id: 3,
-            username: 'liz',
-            email: 'liz@example.com'
-        }
-    ];
-
+export const UserList = props => {
+    // console.log(props);
+    const {users} = props;
     return (
         <div>
             {/* id를 key로 설정 */}
-            {/* {users.map(user => (
+            {users.map(user => (
                 <User user={user} key={user.id} />
-            ))} */}
+            ))}
             
             {/* index를 key로 설정 */}
-            {users.map((user, index) => (
+            {/* {users.map((user, index) => (
                 <User user={user} key={index} />
-            ))}
+            ))} */}
 
         </div>
     );
