@@ -1,7 +1,8 @@
-import React from "react";
+import React, {memo} from "react";
 
-export const CreateUser = props => {
+export const CreateUser = memo(props => {
     const {username, email, onChange, onCreate} = props;
+    console.log("CreateUser 컴포넌트 렌더링");
     return (
         <div>
             <input 
@@ -19,4 +20,4 @@ export const CreateUser = props => {
             <button onClick={onCreate}>등록</button>
         </div>
     );
-};
+});
