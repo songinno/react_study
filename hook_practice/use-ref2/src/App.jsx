@@ -1,30 +1,19 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { UserList } from "./components/UserList";
 import { CreateUser } from "./components/CreateUser";
+import { useReducer } from "react";
 
 const countActiveUsers = (users) => {
     console.log("활성 사용자 숫자를 세는 중...");
     return users.filter(user => user.activate).length;
 };
 
-export const App = () => {
-    const [inputs, setInputs] = useState({
+const initialState = {
+    inputs: {
         username: '',
         email: ''
-    });
-
-    const {username, email} = inputs;
-
-    const onChange = useCallback(e => {
-        const {name, value} = e.target;
-        setInputs( inputs => ({ // 최신 inputs
-            ...inputs,
-            [name]: value
-        }));
-    }, []);
-
-    // users도 State로 관리
-    const [users, setUsers] = useState([
+    },
+    users: [
         {
             id: 1,
             username: 'velopert',
@@ -43,65 +32,97 @@ export const App = () => {
             email: 'liz@example.com',
             activate: false
         }
-    ]);
+    ]
+};
 
-    // useRef 사용
-    // const nextId = useRef(users.length);
+const reducer = (state, action) => {
+    switch (action.type) {
+        case 'CHANGE_INPUT':
+            return {
+                ...state,
+                inputs: {
+                    ...state.inputs,
+                    [action.name]: action.value
+                }
+            }
+
+        case 'CREATE_USER':
+            return {
+                // ...state, // 속성이 inputs와 users 밖에 없어서, 복사해도 그만 안해도 그만
+                inputs: initialState.inputs, // input 초기화
+                users: state.users.concat(action.newUser)
+            }
+        case 'CHANGE_ACTIVATE':
+            return {
+                ...state,
+                users: state.users.map(user =>
+                    user.id === action.userId ? { ...user, activate: !user.activate } : user
+                )
+            };
+
+        case 'REMOVE_USER':
+            return {
+                ...state,
+                users: state.users.filter(user => user.id !== action.userId)
+            }
+        default:
+            return state;
+    }
+};
+
+export const App = () => {
+    // useReducer
+    const [state, dispatch] = useReducer(reducer, initialState);
     const nextId = useRef(4);
 
+    // State에 필요한 값 추출
+    const { username, email } = state.inputs;
+    const { users } = state;
+
+    // onChange
+    const onChange = useCallback(e => {
+        const { name, value } = e.target;
+        dispatch({
+            type: 'CHANGE_INPUT',
+            name,
+            value
+        });
+    }, []);
+
+    // onCreate
     const onCreate = useCallback(() => {
-        // 신규 유저 객체
         const newUser = {
             id: nextId.current,
-            username,
-            email
+            username: username,
+            email: email
         };
-        // users 배열에 항목을 추가 방법1 : 분할 대입 이용
-        // setUsers([...users, newUser]);
 
-        // users 배열에 항목을 추가 방법2 : concat() 함수 이용
-        setUsers(users => // 최신 users
-            users.concat(newUser));
-
-        // input 초기화
-        setInputs({
-            username: '',
-            email: ''
+        dispatch({
+            type: 'CREATE_USER',
+            newUser: newUser
         });
 
         nextId.current += 1;
     }, [username, email]);
 
-    // 유저 삭제 
-    const onRemove = useCallback((userId) => {
-        /* filter 이용 */
-        setUsers(users => // 최신 users
-            users.map(user => 
-                user.id === userId ? {...user, activate: !user.activate} : user
-            )
-        );
-
-        /* findIndex + splice 이용 */
-        // // 배열 깊은 복사(불변성 유지를 위함)
-        // const newUsers = [...users];
-        // // 삭제하려는 유저의 index
-        // const targetIndex = newUsers.findIndex(user => user.id === userId);
-        // // 배열 요소 삭제
-        // newUsers.splice(targetIndex, 1);
-        // // console.log(newUsers);
-        // setUsers(newUsers);
+    // onToggle
+    const onToggle = useCallback(userId => {
+        dispatch({
+            type: 'CHANGE_ACTIVATE',
+            userId: userId
+        });
     }, []);
 
-    // 수정 토글
-    const onToggle = useCallback((userId) => {
-        setUsers(users => // 최신 users
-            users.map(user =>
-                 (user.id === userId) ? {...user, activate: !user.activate} : user
-            )
-        );
+    // onRemove
+    const onRemove = useCallback(userId => {
+        dispatch({
+            type: 'REMOVE_USER',
+            userId: userId
+        });
     }, []);
 
-    const acitveUserCount = useMemo(() => countActiveUsers(users), [users]);
+    // 활성 사용자 수
+    const activateCount = useMemo(() => countActiveUsers(users), [users]);
 
     return (
         <>
@@ -111,8 +132,12 @@ export const App = () => {
                 onChange={onChange}
                 onCreate={onCreate}
             />
-            <UserList users={users} onRemove={onRemove} onToggle={onToggle} />
-            <div>활성 사용자 수: {acitveUserCount}</div>
+            <UserList
+                users={users}
+                onToggle={onToggle}
+                onRemove={onRemove}
+            />
+            <div>활성 사용자 수: {activateCount}</div>
         </>
     );
 };
