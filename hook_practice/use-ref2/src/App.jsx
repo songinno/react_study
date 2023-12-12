@@ -2,7 +2,6 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import { UserList } from "./components/UserList";
 import { CreateUser } from "./components/CreateUser";
 import { useReducer } from "react";
-import { useInputs } from "./hooks/useInputs";
 
 const countActiveUsers = (users) => {
     console.log("활성 사용자 숫자를 세는 중...");
@@ -10,11 +9,6 @@ const countActiveUsers = (users) => {
 };
 
 const initialState = {
-    // State에서 inputs 제거 (useInputs에서 관리)
-    // inputs: {
-    //     username: '',
-    //     email: ''
-    // },
     users: [
         {
             id: 1,
@@ -39,35 +33,23 @@ const initialState = {
 
 const reducer = (state, action) => {
     switch (action.type) {
-        // useInputs 커스텀 Hooks에서 관리하므로 주석처리
-        // case 'CHANGE_INPUT':
-        //     return {
-        //         ...state,
-        //         inputs: {
-        //             ...state.inputs,
-        //             [action.name]: action.value
-        //         }
-        //     }
-
         case 'CREATE_USER':
             return {
-                // ...state, // 속성이 inputs와 users 밖에 없어서, 복사해도 그만 안해도 그만
-                // inputs: initialState.inputs, // (input 초기화) useInputs에서 reset() 함수 가져옴
+                ...state,
                 users: state.users.concat(action.newUser)
             }
         case 'CHANGE_ACTIVATE':
             const rs = {
-                // ...state, // useInputs 커스텀 훅에서 관리하므로, State는 users 밖에 없어서 복사해도 그만, 안해도 그만
+                ...state,
                 users: state.users.map(user =>
                     user.id === action.userId ? { ...user, activate: !user.activate } : user
                 )
             };
-            // console.log(rs);
             return rs;
 
         case 'REMOVE_USER':
             return {
-                // ...state, // useInputs 커스텀 훅에서 관리하므로, State는 users 밖에 없어서 복사해도 그만, 안해도 그만
+                ...state,
                 users: state.users.filter(user => user.id !== action.userId)
             }
         default:
@@ -75,87 +57,30 @@ const reducer = (state, action) => {
     }
 };
 
-export const App = () => {
-    // useInputs (커스텀 Hooks)
-    const initalInputs = {
-        username: '',
-        email: ''
-    };
-    const [form, onChange, reset] = useInputs(initalInputs);
-    const {username, email} = form;
+// UserDispatch라는 Context를 생성하고, 어디서든지 사용할 수 있도록 export
+export const UserDispatch = React.createContext(null);
 
+export const App = () => {
+    
     // useReducer
     const [state, dispatch] = useReducer(reducer, initialState);
 
-    // useRef - 특정 값 관리
-    const nextId = useRef(4);
+   
 
     // State에 필요한 값 추출
-    // const { username, email } = state.inputs; // useInputs에서 가져옴
     const { users } = state;
 
-    // useInputs에서 가져옴
-    // onChange
-    // const onChange = useCallback(e => {
-    //     const { name, value } = e.target;
-    //     dispatch({
-    //         type: 'CHANGE_INPUT',
-    //         name,
-    //         value
-    //     });
-    // }, []);
-
-    // onCreate
-    const onCreate = useCallback(() => {
-        const newUser = {
-            id: nextId.current,
-            username: username,
-            email: email
-        };
-
-        dispatch({
-            type: 'CREATE_USER',
-            newUser: newUser
-        });
-
-        reset(); // input 값 초기화
-
-        nextId.current += 1;
-    }, [username, email, reset]); // reset 함수도 useCallback의 의존 배열에 추가
-
-    // onToggle
-    const onToggle = useCallback(userId => {
-        dispatch({
-            type: 'CHANGE_ACTIVATE',
-            userId: userId
-        });
-    }, []);
-
-    // onRemove
-    const onRemove = useCallback(userId => {
-        dispatch({
-            type: 'REMOVE_USER',
-            userId: userId
-        });
-    }, []);
 
     // 활성 사용자 수
     const activateCount = useMemo(() => countActiveUsers(users), [users]);
 
     return (
-        <>
-            <CreateUser
-                username={username}
-                email={email}
-                onChange={onChange}
-                onCreate={onCreate}
-            />
+        <UserDispatch.Provider value={dispatch}>
+            <CreateUser/>
             <UserList
                 users={users}
-                onToggle={onToggle}
-                onRemove={onRemove}
             />
             <div>활성 사용자 수: {activateCount}</div>
-        </>
+        </UserDispatch.Provider>
     );
 };
