@@ -1,12 +1,15 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useMemo } from "react";
 import { UserList } from "./components/UserList";
 import { CreateUser } from "./components/CreateUser";
 import { useReducer } from "react";
+import {produce} from 'immer';
+import { useState } from "react";
 
 const countActiveUsers = (users) => {
     console.log("활성 사용자 숫자를 세는 중...");
     return users.filter(user => user.activate).length;
 };
+
 
 const initialState = {
     users: [
@@ -34,24 +37,21 @@ const initialState = {
 const reducer = (state, action) => {
     switch (action.type) {
         case 'CREATE_USER':
-            return {
-                ...state,
-                users: state.users.concat(action.newUser)
-            }
+            return produce(state, draft => {
+                    draft.users.push(action.newUser);
+            });
         case 'CHANGE_ACTIVATE':
-            const rs = {
-                ...state,
-                users: state.users.map(user =>
-                    user.id === action.userId ? { ...user, activate: !user.activate } : user
-                )
-            };
-            return rs;
+
+            return produce(state, draft => {
+                const targetUser = draft.users.find(user => action.userId === user.id);
+                targetUser.activate = !targetUser.activate;
+            });
 
         case 'REMOVE_USER':
-            return {
-                ...state,
-                users: state.users.filter(user => user.id !== action.userId)
-            }
+            return produce(state, draft => {
+                const targetUserIndex = draft.users.findIndex(user => action.userId === user.id);
+                draft.users.splice(targetUserIndex, 1);
+            });
         default:
             return state;
     }
