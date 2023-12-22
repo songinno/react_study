@@ -3,6 +3,7 @@ import {createGlobalStyle} from 'styled-components';
 import { TodoTemplate } from "./TodoTemplate";
 import { TodoHead } from "./TodoHead";
 import { TodoList } from "./TodoList";
+import { TodoCreate } from "./TodoCreate";
 
 const GlobalStyle = createGlobalStyle`
     body {
@@ -17,6 +18,7 @@ export const App = () => {
             <TodoTemplate>
                 <TodoHead />
                 <TodoList />
+                <TodoCreate />
             </TodoTemplate>
         </>
     )
