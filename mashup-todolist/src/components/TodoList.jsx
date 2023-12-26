@@ -1,6 +1,8 @@
 import React from "react";
 import styled from 'styled-components';
 import { TodoItem } from "./TodoItem";
+import { useTodoState } from "../context/TodoContext";
+
 
 const TodoListBlock = styled.div`
     flex: 1; /* 자신이 차지할 수 있는 영역 모두 채우기 */
@@ -13,12 +15,19 @@ const TodoListBlock = styled.div`
 `;
 
 export const TodoList = () => {
+    const todos = useTodoState();
+    // console.log(todos);
+    
     return (
         <TodoListBlock>
-            <TodoItem text="프로젝트 생성하기" done={true} />
-            <TodoItem text="컴포넌트 스타일링하기" done={true} />
-            <TodoItem text="Context 만들기" done={false} />
-            <TodoItem text="기능 구현하기" done={false} />
+            {todos.map(todo => (
+                <TodoItem
+                    key={todo.id}
+                    id={todo.id}
+                    text={todo.text}
+                    $done={(todo.done)}
+                />
+            ))}
         </TodoListBlock>
     );
 };

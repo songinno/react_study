@@ -41,7 +41,7 @@ const todoReducer = (state, action) => {
     }
 };
 
-const ToodStateContext = createContext();
+const TodoStateContext = createContext();
 const TodoDispatchContext = createContext();
 const TodoNextIdContext = createContext();
 
@@ -52,24 +52,32 @@ export const TodoProvider = props => {
     const nextId = useRef(5);
 
     return (
-        <ToodStateContext.Provider value={state}>
+        <TodoStateContext.Provider value={state}>
             <TodoDispatchContext.Provider value={dispatch}>
                 <TodoNextIdContext.Provider value={nextId}>
                     {children}
                 </TodoNextIdContext.Provider>
             </TodoDispatchContext.Provider>
-        </ToodStateContext.Provider>
+        </TodoStateContext.Provider>
     );
 };
 
 export const useTodoState = () => {
-    return useContext(ToodStateContext);
+    const state = useContext(TodoStateContext);
+    if (!state) {
+        throw new Error('Cannot find TodoProvider');
+    }
+    return state;
 };
 
 export const useTodoDispatch = () => {
-    return useContext(TodoDispatchContext);
+    const dispatch =  useContext(TodoDispatchContext);
+    if (!dispatch) throw new Error('Cannot find TodoProvider');
+    return dispatch;
 };
 
 export const useTodoNextId = () => {
-    return useContext(TodoNextIdContext);
+    const nextId = useContext(TodoNextIdContext);
+    if (!nextId) throw new Error('Cannot find TodoProvider');
+    return nextId;
 };

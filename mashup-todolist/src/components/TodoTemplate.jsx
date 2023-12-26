@@ -20,7 +20,7 @@ const TodoTemplateBlock = styled.div`
 
 export const TodoTemplate = props => {
     const {children} = props;
-    console.log(children);
+    // console.log(children);
     
     return (
         <TodoTemplateBlock>{children}</TodoTemplateBlock>
