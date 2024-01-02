@@ -19,6 +19,12 @@ export const Home = () => {
                 <li>
                     <Link to="/profiles/void">존재하지 않는 프로필</Link>
                 </li>
+                <li>
+                    <Link to="/articles">게시글 목록</Link>
+                </li>
+                <li>
+                    <Link to="/mypage">마이 페이지(로그인 안하면 안됨)</Link>
+                </li>
             </ul>
 
         </div>
